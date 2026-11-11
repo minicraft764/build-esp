@@ -3,7 +3,7 @@ name: Build ESP32 Binary
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,11 +23,21 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install esp32:esp32
 
+      - name: Restructure into Match Folder
+        run: |
+          # Create folder matching the exact sketch name: esp32-u2f-ble
+          mkdir -p esp32-u2f-ble
+          
+          # Move all repository files into the matching sketch folder
+          shopt -s extglob
+          for f in !(esp32-u2f-ble|.git|.github); do
+            mv "$f" esp32-u2f-ble/
+          done
+
       - name: Compile Sketch
         run: |
-          # Finds the main directory and compiles for standard ESP32 (esp32:esp32:esp32)
           mkdir -p build
-          arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir ./build .
+          arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir ./build ./esp32-u2f-ble
 
       - name: Upload Binary Artifact
         uses: actions/upload-artifact@v4
