@@ -16,19 +16,16 @@ jobs:
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v2
 
-      - name: Install ESP32 Board Core
+      - name: Install Compatible ESP32 Board Core (v2.0.14)
         run: |
           arduino-cli config init
           arduino-cli config set board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           arduino-cli core update-index
-          arduino-cli core install esp32:esp32
+          arduino-cli core install esp32:esp32@2.0.14
 
       - name: Restructure into Match Folder
         run: |
-          # Create folder matching the exact sketch name: esp32-u2f-ble
           mkdir -p esp32-u2f-ble
-          
-          # Move all repository files into the matching sketch folder
           shopt -s extglob
           for f in !(esp32-u2f-ble|.git|.github); do
             mv "$f" esp32-u2f-ble/
